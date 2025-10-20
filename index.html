@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Oyu Resonance - Muyiz, 2025</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+    }
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      background: black;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* The video is constrained to a visible area in the center */
+    video {
+      max-width: 95vw; 
+      max-height: 95vh;
+      width: auto;
+      height: auto;
+      
+      object-fit: contain;
+      background: black;
+      z-index: 1;
+      position: relative;
+      border-radius: 8px; /* Added rounded corners for aesthetics */
+    }
+
+    /* Overlay container that covers the video area */
+    #overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      /* Soft, dark transparency over the video area */
+      background: rgba(0,0,0,0.7); 
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      cursor: pointer;
+      z-index: 2;
+      transition: opacity 0.3s ease;
+    }
+
+    #overlay.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* Styling for the simple circular Play button container */
+    #play-icon-container {
+      /* --- SVG Icon Styling --- */
+      padding: 0; 
+      border: none; 
+      /* Translucent white background for the icon */
+      background: rgba(255,255,255,0.2); 
+      color: white; 
+      box-shadow: 0 0 20px rgba(0,0,0,0.8); 
+      
+      width: 100px; /* Size of the button area */
+      height: 100px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 50%; /* Circular shape */
+      transition: background 0.2s, transform 0.2s;
+      
+      /* Ensure the SVG is centered */
+      transform: translateX(4px); /* Minor optical adjustment for the triangle shape */
+    }
+    
+    #play-icon-container:hover {
+      background: rgba(255,255,255,0.3);
+      transform: scale(1.05) translateX(4px);
+    }
+    
+    /* Style the SVG icon itself */
+    #play-icon-container svg {
+        width: 40px;
+        height: 40px;
+        fill: white;
+    }
+  </style>
+</head>
+<body>
+  
+  <video id="myVideo" muted loop playsinline>
+    <source src="Comp 1-2.mp4" type="video/mp4">
+    Your browser does not support the video tag.
+  </video>
+
+  <!-- Replaced Unicode character with clean, inline SVG -->
+  <div id="overlay">
+    <div id="play-icon-container">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M6 3l15 9-15 9V3z"/>
+        </svg>
+    </div>
+  </div>
+
+  <script>
+    const video = document.getElementById('myVideo');
+    const overlay = document.getElementById('overlay');
+
+    overlay.addEventListener('click', async () => {
+      // 1. Hide overlay first for better UX
+      overlay.classList.add('hidden');
+      
+      // 2. Unmute and set controls
+      video.muted = false;
+      video.controls = true;
+      video.loop = false; 
+
+      // 3. Force the browser to re-evaluate the video state for control display
+      video.load(); 
+
+      // 4. Attempt to play
+      try {
+        await video.play();
+      } catch (err) {
+        console.error('Playback error:', err);
+        // If play fails, potentially show a message or button again
+        overlay.classList.remove('hidden');
+      }
+    });
+  </script>
+
+</body>
+</html>
