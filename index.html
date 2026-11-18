@@ -1,139 +1,28 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Oyu Resonance - Muyiz, 2025</title>
-  <style>
-    * {
-      box-sizing: border-box;
-      font-family: 'Inter', sans-serif;
-    }
-    html, body {
-      margin: 0;
-      padding: 0;
-      width: 100%;
-      height: 100%;
-      background: black;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    /* The video is constrained to a visible area in the center */
-    video {
-      max-width: 95vw; 
-      max-height: 95vh;
-      width: auto;
-      height: auto;
-      
-      object-fit: contain;
-      background: black;
-      z-index: 1;
-      position: relative;
-      border-radius: 8px; /* Added rounded corners for aesthetics */
-    }
-
-    /* Overlay container that covers the video area */
-    #overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      /* Soft, dark transparency over the video area */
-      background: rgba(0,0,0,0.7); 
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      color: white;
-      cursor: pointer;
-      z-index: 2;
-      transition: opacity 0.3s ease;
-    }
-
-    #overlay.hidden {
-      opacity: 0;
-      pointer-events: none;
-    }
-
-    /* Styling for the simple circular Play button container */
-    #play-icon-container {
-      /* --- SVG Icon Styling --- */
-      padding: 0; 
-      border: none; 
-      /* Translucent white background for the icon */
-      background: rgba(255,255,255,0.2); 
-      color: white; 
-      box-shadow: 0 0 20px rgba(0,0,0,0.8); 
-      
-      width: 100px; /* Size of the button area */
-      height: 100px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      border-radius: 50%; /* Circular shape */
-      transition: background 0.2s, transform 0.2s;
-      
-      /* Ensure the SVG is centered */
-      transform: translateX(4px); /* Minor optical adjustment for the triangle shape */
-    }
-    
-    #play-icon-container:hover {
-      background: rgba(255,255,255,0.3);
-      transform: scale(1.05) translateX(4px);
-    }
-    
-    /* Style the SVG icon itself */
-    #play-icon-container svg {
-        width: 40px;
-        height: 40px;
-        fill: white;
-    }
-  </style>
-</head>
-<body>
-  
-  <video id="myVideo" muted loop playsinline>
-    <source src="Muyiz.mp4" type="video/mp4">
-    Your browser does not support the video tag.
-  </video>
-
-  <!-- Replaced Unicode character with clean, inline SVG -->
-  <div id="overlay">
-    <div id="play-icon-container">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-            <path d="M6 3l15 9-15 9V3z"/>
-        </svg>
-    </div>
-  </div>
-
-  <script>
-    const video = document.getElementById('myVideo');
-    const overlay = document.getElementById('overlay');
-
-    overlay.addEventListener('click', async () => {
-      // 1. Hide overlay first for better UX
-      overlay.classList.add('hidden');
-      
-      // 2. Unmute and set controls
-      video.muted = false;
-      video.controls = true;
-      video.loop = false; 
-
-      // 3. Force the browser to re-evaluate the video state for control display
-      video.load(); 
-
-      // 4. Attempt to play
-      try {
-        await video.play();
-      } catch (err) {
-        console.error('Playback error:', err);
-        // If play fails, potentially show a message or button again
-        overlay.classList.remove('hidden');
-      }
-    });
-  </script>
-
-</body>
-</html>
+<html lang="en"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Oyu Resonance - Muyiz, 2025</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#000;color:#fff;font-family:Inter,Arial,sans-serif;min-height:100vh;min-height:100dvh;display:grid;place-items:center}main{width:100%;text-align:center;padding:12px}video{display:block;margin:auto;max-width:95vw;max-height:calc(100vh - 140px);max-height:calc(100dvh - 140px);width:auto;height:auto;object-fit:contain;border-radius:8px}.actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin:14px 0 8px}button,a{font:inherit;color:#fff}button{border:1px solid #777;background:#222;border-radius:24px;padding:11px 18px;cursor:pointer;min-height:44px}button:focus-visible,a:focus-visible{outline:2px solid white;outline-offset:4px}[hidden]{display:none!important}p{font-size:14px;line-height:1.4;margin:8px auto;max-width:40em}a{font-size:13px;color:#bbb}
+</style></head><body><main>
+<video id="video" autoplay muted playsinline webkit-playsinline controls preload="auto" src="Muyiz.mp4">Your browser does not support video.</video>
+<div class="actions"><button id="sound" type="button">Enable sound</button><button id="play" type="button">Play video</button><button id="retry" type="button" hidden>Retry loading</button></div>
+<p id="status" role="status" aria-live="polite">Loading video...</p>
+<a href="Muyiz.mp4">Open video directly</a>
+</main><script>
+const v=document.getElementById('video'), sound=document.getElementById('sound'), play=document.getElementById('play'), retry=document.getElementById('retry'), status=document.getElementById('status');
+let timer;
+function slow(){clearTimeout(timer);timer=setTimeout(()=>{if(v.paused||v.readyState<3){status.textContent='Loading is taking longer. Tap Play, retry, or open the video directly.';play.hidden=false;retry.hidden=false;}},12000);}
+function start(){slow();const result=v.play();if(result)result.catch(()=>{clearTimeout(timer);status.textContent=v.error?'Video could not load. Retry or open it directly.':'Tap Play to start the video.';play.hidden=false;retry.hidden=!v.error;});}
+v.defaultMuted=true;v.muted=true;
+sound.addEventListener('click',()=>{v.muted=!v.muted;if(v.paused)start();});
+play.addEventListener('click',start);
+retry.addEventListener('click',()=>{status.textContent='Retrying...';retry.hidden=true;v.src='Muyiz.mp4?retry='+Date.now();start();});
+v.addEventListener('volumechange',()=>{sound.textContent=v.muted?'Enable sound':'Mute sound';});
+v.addEventListener('playing',()=>{clearTimeout(timer);play.hidden=true;retry.hidden=true;status.textContent='';});
+v.addEventListener('waiting',()=>{status.textContent='Buffering...';slow();});
+v.addEventListener('stalled',()=>{status.textContent='Waiting for the connection...';slow();});
+v.addEventListener('error',()=>{clearTimeout(timer);status.textContent='Video could not load. Check your connection, retry, or open it directly.';play.hidden=true;retry.hidden=false;});
+v.addEventListener('ended',()=>{clearTimeout(timer);play.textContent='Replay video';play.hidden=false;status.textContent='';});
+start();
+</script></body></html>
